@@ -37,40 +37,40 @@ class TransactionsController
   }
  
   public function pushDeposit(Request $request, Response $response, $args){
-      $db = $this->getConnection();
-      $idA = $args['id'];
-      $data = json_decode($request->getBody(), true);
-      $amount = $data['amount'] ?? 0;
-      $description = $data['description'] ?? '';
-      if ($amount <= 0) {
-        $response->getBody()->write(json_encode(["error" => "Import must be higher than 0"]));
-        return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-      }
+    $db = $this->getConnection();
+    $idA = $args['id'];
+    $data = json_decode($request->getBody(), true);
+    $amount = $data['amount'] ?? 0;
+    $description = $data['description'] ?? '';
+    if ($amount <= 0) {
+      $response->getBody()->write(json_encode(["error" => "Import must be higher than 0"]));
+      return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
   }
  
   public function pushWithDrawal(Request $request, Response $response, $args){
     $db = $this->getConnection();
-        $idA = $args['id'];
-        $data = json_decode($request->getBody(), true);
-        $amount = $data['amount'] ?? 0;
-        $description = $data['description'] ?? '';
-        if ($amount <= 0) {
-            $response->getBody()->write(json_encode(["error" => "Importo non valido"]));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-        $query2 = "SELECT (SELECT IFNULL(SUM(amount),0) FROM transactions WHERE account_id = $idA AND type = 'deposit') - 
-                     (SELECT IFNULL(SUM(amount),0) FROM transactions WHERE account_id = $idA AND type = 'withdrawal') as saldo";
-        $currentBalance = mysqli_fetch_assoc(mysqli_query($db, $query2))['saldo'];
-        if ($amount > $currentBalance) {
-            $response->getBody()->write(json_encode(["error" => "Insufficient balance"]));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-        $newBalance = $currentBalance - $amount;
-        $query = "INSERT INTO transactions (account_id, type, amount, description, balance_after) 
-                  VALUES ($idA, 'withdrawal', $amount, '$description', $newBalance)";
-        mysqli_query($db, $query);
-        $response->getBody()->write(json_encode(["message" => "Withdrawal made", "balance" => $newBalance]));
-        return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+    $idA = $args['id'];
+    $data = json_decode($request->getBody(), true);
+    $amount = $data['amount'] ?? 0;
+    $description = $data['description'] ?? '';
+    if ($amount <= 0) {
+        $response->getBody()->write(json_encode(["error" => "Importo non valido"]));
+        return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+    $query2 = "SELECT (SELECT IFNULL(SUM(amount),0) FROM transactions WHERE account_id = $idA AND type = 'deposit') - 
+                  (SELECT IFNULL(SUM(amount),0) FROM transactions WHERE account_id = $idA AND type = 'withdrawal') as saldo";
+    $currentBalance = mysqli_fetch_assoc(mysqli_query($db, $query2))['saldo'];
+    if ($amount > $currentBalance) {
+        $response->getBody()->write(json_encode(["error" => "Insufficient balance"]));
+        return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+    $newBalance = $currentBalance - $amount;
+    $query = "INSERT INTO transactions (account_id, type, amount, description, balance_after) 
+              VALUES ($idA, 'withdrawal', $amount, '$description', $newBalance)";
+    mysqli_query($db, $query);
+    $response->getBody()->write(json_encode(["message" => "Withdrawal made", "balance" => $newBalance]));
+    return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
   }
 
   public function setMovement(Request $request, Response $response, $args){
