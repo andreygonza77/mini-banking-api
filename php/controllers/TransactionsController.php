@@ -4,16 +4,12 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class TransactionsController
 {
-  public function index(Request $request, Response $response, $args){
-    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'bank');
-    $result = $mysqli_connection->query("SELECT * FROM alunni");
-    $results = $result->fetch_all(MYSQLI_ASSOC);
-
-    $response->getBody()->write(json_encode($results));
-    return $response->withHeader("Content-type", "application/json")->withStatus(200);
+  private function getConnection(){
+    return mysqli_connect('my_mariadb', 'root', 'ciccio', 'bank');
   }
+
   public function getMovements(Request $request, Response $response, $args){
-    $connect = mysqli_connect('my_mariadb', 'root', 'ciccio', 'bank');
+    $db = $this->getConnection();
     $id = $args['id'];
     $query = "SELECT id, type, amount, description, created_at 
               FROM transactions 
@@ -26,8 +22,7 @@ class TransactionsController
   }
 
   public function getMovementDetail(Request $request, Response $response, $args){
-    $connect = mysqli_connect('my_mariadb', 'root', 'ciccio', 'bank');
-    $idT = $args["idT"];
+    $db = $this->getConnection();
     $idA = $args["idA"];
     $query = "SELECT * 
     FROM transactions 
@@ -40,11 +35,11 @@ class TransactionsController
     return $response->withHeader("Content-type", "application/json")->withStatus(200);
    }
   }
-  /*
+ 
   public function pushDeposit(Request $request, Response $response, $args){
 
   }
-
+ /*
   public function pushWithDrawal(Request $request, Response $response, $args){
 
   }
@@ -52,9 +47,24 @@ class TransactionsController
   public function setMovement(Request $request, Response $response, $args){
 
   }
-  
-  public function deleteMovement(Request $request, Response $response, $args){
-
-  }
   */
+  public function deleteMovement(Request $request, Response $response, $args){
+    $db = $this->getConnection();
+    $idT = $args['idT'];
+    $idA = $args['idA'];
+
+    // Controllo se è l'ultimo ID per quel conto
+    $checkQuery = "SELECT id FROM transactions WHERE account_id = $idA ORDER BY created_at DESC LIMIT 1";
+    $lastId = mysqli_fetch_assoc(mysqli_query($db, $checkQuery))['id'];
+
+    if ($idT != $lastId) {
+        $response->getBody()->write(json_encode(["error" => "Puoi eliminare solo l'ultimo movimento per coerenza"]));
+        return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
+    }
+    $query = "DELETE FROM transactions WHERE id = $idT";
+    mysqli_query($db, $query);
+    $response->getBody()->write(json_encode(["message" => "Movimento eliminato"]));
+    return $response->withHeader('Content-Type', 'application/json');
+  }
+  
 }
