@@ -26,7 +26,7 @@
     "amount": 150.50,
     "description": "Ricarica mensile"
 }
-
+```
 
 ## Come avviare:
 
