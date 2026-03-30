@@ -15,7 +15,7 @@ class TransactionsController
               FROM transactions 
               WHERE account_id = $id 
               ORDER BY created_at DESC;";
-    $result = mysqli_query($connect, $query);
+    $result = mysqli_query($db, $query);
     $movement = mysqli_fetch_assoc($result);
     $response->getBody()->write(json_encode($movement));
     return $response->withHeader('Content-Type', 'application/json');
@@ -27,7 +27,7 @@ class TransactionsController
     $query = "SELECT * 
     FROM transactions 
     WHERE id = $idT;";
-    $result = mysqli_query($connect, $query);
+    $result = mysqli_query($db, $query);
     $movement = mysqli_fetch_assoc($result);
     if(!isset($movement)){
       return $response->withStatus(404);
