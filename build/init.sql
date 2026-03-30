@@ -1,25 +1,29 @@
-CREATE TABLE `alunni` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(20) NOT NULL,
-  `cognome` VARCHAR(20) NOT NULL,
-  PRIMARY KEY (`id`)
+CREATE DATABASE IF NOT EXISTS bank;
+USE bank;
+
+CREATE TABLE IF NOT EXISTS accounts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    owner_name VARCHAR(100) NOT NULL,
+    currency CHAR(3) NOT NULL DEFAULT 'EUR',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE `certificazioni` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `alunno_id` INT(11) NOT NULL,
-  `titolo` VARCHAR(100) NOT NULL,
-  `votazione` INT(3) NOT NULL CHECK (`votazione` BETWEEN 0 AND 100),
-  `ente` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`alunno_id`) REFERENCES `alunni`(`id`) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id INT NOT NULL,
+    type ENUM('deposit', 'withdrawal') NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    description VARCHAR(255),
+    balance_after DECIMAL(15,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `alunni` (`nome`, `cognome`) VALUES
-('claudio', 'benve'),
-('ivan', 'bruno');
+INSERT INTO accounts (id, owner_name, currency) 
+VALUES (1, 'Gioele Piemontese', 'EUR')
+ON DUPLICATE KEY UPDATE owner_name='Gioele Piemontese';
 
-INSERT INTO `certificazioni` (`alunno_id`, `titolo`, `votazione`, `ente`) VALUES
-(1, 'Certificazione Python', 85, 'Coursera'),
-(1, 'Certificazione SQL', 90, 'Udemy'),
-(2, 'Certificazione Java', 78, 'Oracle');
+INSERT INTO transactions (account_id, type, amount, description, balance_after)
+VALUES (1, 'deposit', 1000.00, 'Apertura conto', 1000.00)
+ON DUPLICATE KEY UPDATE id=id;
+ 

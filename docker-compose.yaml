@@ -13,7 +13,7 @@ services:
       - "./php:/var/www/html"
 
   my_mariadb:
-    user: ${MY_UID}:${MY_GID}
+    # user: ${MY_UID}:${MY_GID}
     build:
       context: ./build
       dockerfile: Dockerfile.mariadb
@@ -22,7 +22,7 @@ services:
         GID: ${MY_GID}
     environment:
       - MARIADB_ROOT_PASSWORD=ciccio
-      - MARIADB_DATABASE=scuola
+      - MARIADB_DATABASE=bank
     volumes:
       - "./mysql:/var/lib/mysql"
       - "./build/init.sql:/docker-entrypoint-initdb.d/init.sql"
