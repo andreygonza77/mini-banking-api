@@ -23,7 +23,7 @@ class TransactionsController
 
   public function getMovementDetail(Request $request, Response $response, $args){
     $db = $this->getConnection();
-    $idA = $args["idA"];
+    $idA = $args["id"];
     $query = "SELECT * 
     FROM transactions 
     WHERE id = $idT;";
