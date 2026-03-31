@@ -9,7 +9,7 @@
 | `PUT` | `/accounts/{idA}/transactions/{idT}` | Modifica la descrizione di un movimento |
 | `DELETE` | `/accounts/{idA}/transactions/{idT}` | Elimina l'ultimo movimento inserito |
 
-### Conversioni
+### Conversioni (da fare)
 | Metodo | Endpoint | Parametri | Descrizione |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/.../convert/fiat` | `?to=USD` | Converte saldo in valuta Fiat |
@@ -17,7 +17,7 @@
 
 --- 
 
-## 📝 Esempi di Chiamata (JSON)
+## 📝 Esempi di Chiamata (JSON) (da sistemare)
 
 ### Registrare un Deposito
 **POST** `http://localhost:8085/accounts/1/deposits`
