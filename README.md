@@ -36,6 +36,5 @@
 `docker-compose up`
 
 ## Realizzato da:
-### Gonzales 
-### Stoppioni
-### Calamai
+### Gonzales, Stoppioni, Calamai
+
