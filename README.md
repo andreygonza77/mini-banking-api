@@ -27,7 +27,6 @@
     "description": "Ricarica mensile"
 }
 ```
-
 ## Come avviare:
 
 ### Su Linux
@@ -35,3 +34,8 @@
 
 ### Su Windows
 `docker-compose up`
+
+## Realizzato da:
+### Gonzales 
+### Stoppioni
+### Calamai
