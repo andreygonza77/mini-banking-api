@@ -17,15 +17,29 @@
 
 --- 
 
-## 📝 Esempi di Chiamata (JSON) (da sistemare)
+## 📝 Esempio di Chiamata (JSON) 
 
 ### Registrare un Deposito
 **POST** `http://localhost:8085/accounts/1/deposits`
+Cosa aggiungere:
 ```json
 {
     "amount": 150.50,
     "description": "Ricarica mensile"
 }
+```
+Comando:
+``` bash
+curl -X POST http://localhost:8085/accounts/1/deposits -H "Content-Type: application/json" -d "{\"amount\":150.50, \"description\":\"Ricarica mensile\"}"
+```
+
+### Eliminare una transazione
+
+**DELETE** `http://localhost:8085/accounts/1/transactions/4`
+Cosa rimuove: ultima transazione 
+Comando:
+``` bash
+curl -X DELETE http://localhost:8085/accounts/1/transactions/4 -H "Content-Type: application/json"
 ```
 ## Come avviare:
 
@@ -36,5 +50,5 @@
 `docker-compose up`
 
 ## Realizzato da:
-### Gonzales, Stoppioni, Calamai
+### Gonzales Andrey, Stoppioni Diego, Calamai Neri
 
