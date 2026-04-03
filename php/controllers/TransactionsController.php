@@ -121,5 +121,4 @@ class TransactionsController
     $response->getBody()->write(json_encode(["message" => "Movement deleted"]));
     return $response->withHeader('Content-Type', 'application/json');
   }
-
 }
