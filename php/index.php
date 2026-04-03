@@ -7,9 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/controllers/TransactionsController.php';
 
-
-
-$mysqli = new mysqli("localhost", "root", "ciccio", "bank");
+$mysqli = new mysqli("my_mariadb", "root", "ciccio", "bank");
 $app = AppFactory::create();
 
 $app->get('/test', function (Request $request, Response $response, array $args) {
@@ -29,4 +27,88 @@ $app->post('/accounts/{id}/deposits', "TransactionsController:pushDeposit");
 $app->post('/accounts/{id}/withdrawals', "TransactionsController:pushWithDrawal");
 $app->put('/accounts/{idA}/transactions/{idT}', "TransactionsController:setMovement");
 $app->delete('/accounts/{idA}/transactions/{idT}', "TransactionsController:deleteMovement");
+$app->get('/accounts/{id}/balance/convert/fiat', function (Request $request, Response $response, array $args) use ($mysqli) {
+    $accountId = (int)$args['id'];
+    $params = $request->getQueryParams();
+    $to = strtoupper($params['to'] ?? '');
+
+    if (!$to) {
+        $response->getBody()->write(json_encode([
+            'error' => 'Missing target currency'
+        ]));
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(400);
+    }
+
+    $stmt = $mysqli->prepare('SELECT id, currency FROM accounts WHERE id = ?');
+    $stmt->bind_param('i', $accountId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $account = $result->fetch_assoc();
+
+    if (!$account) {
+        $response->getBody()->write(json_encode([
+            'error' => 'Account not found'
+        ]));
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(404);
+    }
+
+    $from = strtoupper($account['currency']);
+
+    $stmt = $mysqli->prepare("
+        SELECT
+            COALESCE(SUM(CASE WHEN type = 'deposit' THEN amount ELSE 0 END), 0) -
+            COALESCE(SUM(CASE WHEN type = 'withdrawal' THEN amount ELSE 0 END), 0) AS balance
+        FROM transactions
+        WHERE account_id = ?
+    ");
+    $stmt->bind_param('i', $accountId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $balance = (float)($row['balance'] ?? 0);
+
+    $url = "https://api.frankfurter.dev/v1/latest?base={$from}&symbols={$to}";
+    $json = @file_get_contents($url);
+
+    if ($json === false) {
+        $response->getBody()->write(json_encode([
+            'error' => 'External exchange API unavailable'
+        ]));
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(502);
+    }
+
+    $data = json_decode($json, true);
+
+    if (!isset($data['rates'][$to])) {
+        $response->getBody()->write(json_encode([
+            'error' => 'Target currency not supported'
+        ]));
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(400);
+    }
+
+    $rate = (float)$data['rates'][$to];
+    $converted = round($balance * $rate, 2);
+
+    $response->getBody()->write(json_encode([
+        'account_id' => $accountId,
+        'provider' => 'Frankfurter',
+        'conversion_type' => 'fiat',
+        'from_currency' => $from,
+        'to_currency' => $to,
+        'original_balance' => $balance,
+        'converted_balance' => $converted,
+        'rate' => $rate,
+        'date' => $data['date'] ?? null
+    ]));
+
+    return $response->withHeader('Content-Type', 'application/json');
+});
 $app->run();
