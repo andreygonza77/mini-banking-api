@@ -1,6 +1,6 @@
 #  Mini Banking API
 
-Esercitazione backend REST che simuli un conto bancario semplificato.
+Esercitazione backend REST che simula un conto bancario semplificato.
 
 Il fine di questo progetto è quello di esporre endpoint HTTP che restituiscono JSON senza realizzare un front-end.
 
@@ -46,7 +46,7 @@ Il fine di questo progetto è quello di esporre endpoint HTTP che restituiscono 
 
 --- 
 
-## 📝 Esempio di Chiamata (JSON) 
+## Esempi di Chiamata 
 
 ### Ottenere una specifica transazione
 **GET** `http://localhost:8085/accounts/1/transactions/1`
