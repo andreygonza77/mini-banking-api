@@ -1,6 +1,6 @@
 #  Mini Banking API
 
-Esercitazione backend REST che simula un conto bancario semplificato.
+Esercitazione backend REST che simuli un conto bancario semplificato.
 
 Il fine di questo progetto è quello di esporre endpoint HTTP che restituiscono JSON senza realizzare un front-end.
 
@@ -46,7 +46,7 @@ Il fine di questo progetto è quello di esporre endpoint HTTP che restituiscono 
 
 --- 
 
-## Esempi di Chiamata 
+## 📝 Esempio di Chiamata (JSON) 
 
 ### Ottenere una specifica transazione
 **GET** `http://localhost:8085/accounts/1/transactions/1`
@@ -76,10 +76,23 @@ curl -X POST http://localhost:8085/accounts/1/deposits -H "Content-Type: applica
 **DELETE** `http://localhost:8085/accounts/1/transactions/4`
 
 Cosa rimuove: ultima transazione 
+
 Comando:
+
 ``` bash
 curl -X DELETE http://localhost:8085/accounts/1/transactions/4 -H "Content-Type: application/json"
 ```
+
+### Conversione in Crypto
+
+**GET** `http://localhost:8085/accounts/1/balance/convert/crypto?to=BTC`
+
+Comando:
+
+``` bash
+curl http://localhost:8085/accounts/1/balance/convert/crypto?to=BTC
+```
+
 ## Come avviare:
 
 ### Su Linux
@@ -90,5 +103,4 @@ curl -X DELETE http://localhost:8085/accounts/1/transactions/4 -H "Content-Type:
 
 ## Realizzato da:
 
-### Gonzales Andrey, Stoppioni Diego, Calamai Neri, classe 5AIA
-
+### Gonzales Andrey, Stoppioni Diego, Calamai Neri, classe **5AIA**
