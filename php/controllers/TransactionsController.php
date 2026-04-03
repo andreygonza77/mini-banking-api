@@ -16,24 +16,25 @@ class TransactionsController
               WHERE account_id = $id 
               ORDER BY created_at DESC;";
     $result = mysqli_query($db, $query);
-    $movement = mysqli_fetch_assoc($result);
-    $response->getBody()->write(json_encode($movement));
+    $movement = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $response->getBody()->write(json_encode($movements));
     return $response->withHeader('Content-Type', 'application/json');
   }
 
   public function getMovementDetail(Request $request, Response $response, $args){
     $db = $this->getConnection();
-    $idA = $args["id"];
+    $idA = $args["idA"];
     $query = "SELECT * 
     FROM transactions 
     WHERE id = $idT;";
     $result = mysqli_query($db, $query);
     $movement = mysqli_fetch_assoc($result);
-    if(!isset($movement)){
-      return $response->withStatus(404);
+    if(!$movement){
+        $response->getBody()->write(json_encode(["error" => "Not found"]));
+        return $response->withStatus(404)->withHeader("Content-type", "application/json");
+    }
     $response->getBody()->write(json_encode($movement));
     return $response->withHeader("Content-type", "application/json")->withStatus(200);
-   }
   }
  
   public function pushDeposit(Request $request, Response $response, $args){
@@ -97,91 +98,6 @@ class TransactionsController
     $query = "DELETE FROM transactions WHERE id = $idT";
     mysqli_query($db, $query);
     $response->getBody()->write(json_encode(["message" => "Movement deleted"]));
-    return $response->withHeader('Content-Type', 'application/json');
-  }
-  
-  public function convertToFiat(Request $request, Response $response, array $args) use ($this->getConnection()) {
-    $accountId = (int)$args['id'];
-    $params = $request->getQueryParams();
-    $to = strtoupper($params['to'] ?? '');
-
-    if (!$to) {
-        $response->getBody()->write(json_encode([
-            'error' => 'Missing target currency'
-        ]));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(400);
-    }
-
-    $stmt = $mysqli->prepare('SELECT id, currency FROM accounts WHERE id = ?');
-    $stmt->bind_param('i', $accountId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $account = $result->fetch_assoc();
-
-    if (!$account) {
-        $response->getBody()->write(json_encode([
-            'error' => 'Account not found'
-        ]));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(404);
-    }
-
-    $from = strtoupper($account['currency']);
-
-    $stmt = $mysqli->prepare("
-        SELECT
-            COALESCE(SUM(CASE WHEN type = 'deposit' THEN amount ELSE 0 END), 0) -
-            COALESCE(SUM(CASE WHEN type = 'withdrawal' THEN amount ELSE 0 END), 0) AS balance
-        FROM transactions
-        WHERE account_id = ?
-    ");
-    $stmt->bind_param('i', $accountId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $balance = (float)($row['balance'] ?? 0);
-
-    $url = "https://api.frankfurter.dev/v1/latest?base={$from}&symbols={$to}";
-    $json = @file_get_contents($url);
-
-    if ($json === false) {
-        $response->getBody()->write(json_encode([
-            'error' => 'External exchange API unavailable'
-        ]));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(502);
-    }
-
-    $data = json_decode($json, true);
-
-    if (!isset($data['rates'][$to])) {
-        $response->getBody()->write(json_encode([
-            'error' => 'Target currency not supported'
-        ]));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(400);
-    }
-
-    $rate = (float)$data['rates'][$to];
-    $converted = round($balance * $rate, 2);
-
-    $response->getBody()->write(json_encode([
-        'account_id' => $accountId,
-        'provider' => 'Frankfurter',
-        'conversion_type' => 'fiat',
-        'from_currency' => $from,
-        'to_currency' => $to,
-        'original_balance' => $balance,
-        'converted_balance' => $converted,
-        'rate' => $rate,
-        'date' => $data['date'] ?? null
-    ]));
-
     return $response->withHeader('Content-Type', 'application/json');
   }
 

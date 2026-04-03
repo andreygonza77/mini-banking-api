@@ -7,6 +7,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/controllers/TransactionsController.php';
 
+
+
+$mysqli = new mysqli("localhost", "root", "ciccio", "bank");
 $app = AppFactory::create();
 
 $app->get('/test', function (Request $request, Response $response, array $args) {
