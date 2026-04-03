@@ -46,7 +46,7 @@ Il fine di questo progetto è quello di esporre endpoint HTTP che restituiscono 
 
 --- 
 
-## 📝 Esempio di Chiamata (JSON) 
+## Esempi di Chiamata 
 
 ### Ottenere una specifica transazione
 **GET** `http://localhost:8085/accounts/1/transactions/1`
