@@ -103,4 +103,4 @@ curl http://localhost:8085/accounts/1/balance/convert/crypto?to=BTC
 
 ## Realizzato da:
 
-### Gonzales Andrey, Stoppioni Diego, classe **5AIA**
+### Gonzales Andrey, Calamai Neri, Stoppioni Diego, classe **5AIA**
