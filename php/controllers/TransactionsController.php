@@ -13,9 +13,9 @@ class TransactionsController
     $id = $args['id'];
     $query = "SELECT balance_after 
               FROM transactions 
-              WHERE account_id = 1 
+              WHERE account_id = $id
               ORDER BY created_at DESC, id DESC 
-              LIMIT 1;";
+              LIMIT 1;"; 
     $result = mysqli_query($db, $query);
     $movements = mysqli_fetch_all($result, MYSQLI_ASSOC);
     $response->getBody()->write(json_encode($movements));
