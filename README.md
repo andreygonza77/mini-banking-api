@@ -31,6 +31,7 @@ Il fine di questo progetto è quello di esporre endpoint HTTP che restituiscono 
 ### Gestione Movimenti
 | Metodo | Endpoint | Descrizione |
 | :--- | :--- | :--- |
+| `GET` | `/accounts/{id}/balance` | Saldo attuale di un utente |
 | `GET` | `/accounts/{id}/transactions` | Lista di tutti i movimenti di un conto |
 | `GET` | `/accounts/{idA}/transactions/{idT}` | Dettaglio di un singolo movimento |
 | `POST` | `/accounts/{id}/deposits` | Effettua un deposito (importo > 0) |
