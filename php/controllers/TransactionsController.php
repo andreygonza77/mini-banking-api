@@ -8,6 +8,22 @@ class TransactionsController
     return mysqli_connect('my_mariadb', 'root', 'ciccio', 'bank');
   }
 
+  public function getBalance(Request $request, Response $response, $args){
+    $db = $this->getConnection();
+    $id = $args['id'];
+    $query = "SELECT balance_after 
+              FROM transactions 
+              WHERE account_id = 1 
+              ORDER BY created_at DESC, id DESC 
+              LIMIT 1;";
+    $result = mysqli_query($db, $query);
+    $movements = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $response->getBody()->write(json_encode($movements));
+    return $response->withHeader('Content-Type', 'application/json');
+  }
+
+
+
   public function getMovements(Request $request, Response $response, $args){
     $db = $this->getConnection();
     $id = $args['id'];
