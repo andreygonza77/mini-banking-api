@@ -42,8 +42,8 @@ Il fine di questo progetto è quello di esporre endpoint HTTP che restituiscono 
 ### Conversioni 
 | Metodo | Endpoint | Parametri | Descrizione |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/.../convert/fiat` | `?to=USD` | Converte saldo in valuta Fiat |
-| `GET` | `/.../convert/crypto`| `?to=BTC` | Converte saldo in Cryptocurrency |
+| `GET` | `/accounts/{id}/balance/convert/fiat` | `?to=USD` | Converte saldo in valuta Fiat |
+| `GET` | `/accounts/{id}/balance/convert/crypto`| `?to=BTC` | Converte saldo in Cryptocurrency |
 
 --- 
 

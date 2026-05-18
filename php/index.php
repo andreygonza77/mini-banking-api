@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/controllers/TransactionsController.php';
+require __DIR__ . '/controllers/BalanceController.php';
 
 $mysqli = new mysqli("my_mariadb", "root", "ciccio", "bank");
 $app = AppFactory::create();
