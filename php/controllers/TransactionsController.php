@@ -40,9 +40,10 @@ class TransactionsController
   public function getMovementDetail(Request $request, Response $response, $args){
     $db = $this->getConnection();
     $idA = $args["idA"];
+    $idT = $args["idT"];
     $query = "SELECT * 
     FROM transactions 
-    WHERE id = $idA;";
+    WHERE id = $idT;";
     $result = mysqli_query($db, $query);
     $movement = mysqli_fetch_assoc($result);
     if(!$movement){
