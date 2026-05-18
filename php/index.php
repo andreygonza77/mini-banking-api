@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/controllers/TransactionsController.php';
 require __DIR__ . '/controllers/BalanceController.php';
+require __DIR__ . '/controllers/LoginController.php';
 
 $mysqli = new mysqli("my_mariadb", "root", "ciccio", "bank");
 $app = AppFactory::create();
@@ -20,7 +21,7 @@ $app->put('/accounts/{idA}/transactions/{idT}', "TransactionsController:setMovem
 $app->delete('/accounts/{idA}/transactions/{idT}', "TransactionsController:deleteMovement");
 $app->get('/accounts/{id}/balance/convert/fiat', "BalanceController:convertToFiat");
 $app->get('/accounts/{id}/balance/convert/crypto', "BalanceController:convertToCrypto");
-$app->get('/accounts', "LoginController:getUsers");
+$app->get('/accounts/{id}', "LoginController:getAccount");
 
 $app->run();
 
