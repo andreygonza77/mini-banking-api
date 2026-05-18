@@ -20,6 +20,7 @@ $app->put('/accounts/{idA}/transactions/{idT}', "TransactionsController:setMovem
 $app->delete('/accounts/{idA}/transactions/{idT}', "TransactionsController:deleteMovement");
 $app->get('/accounts/{id}/balance/convert/fiat', "BalanceController:convertToFiat");
 $app->get('/accounts/{id}/balance/convert/crypto', "BalanceController:convertToCrypto");
+$app->get('/accounts', "LoginController:getUsers");
 
 $app->run();
 
