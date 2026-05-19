@@ -11,7 +11,7 @@ class LoginController
     $db = $this->getConnection();
     $id = (int)$args['id'];
 
-    $query = "SELECT id, created_at, owner_name FROM transactions WHERE account_id = $id LIMIT 1;"; 
+    $query = "SELECT id, created_at FROM transactions WHERE account_id = $id LIMIT 1;"; 
     
     $result = mysqli_query($db, $query);
     $account = mysqli_fetch_assoc($result);
