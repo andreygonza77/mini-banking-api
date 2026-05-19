@@ -1,6 +1,5 @@
 FROM php:7.4-apache
 
-# Definiamo i fallback per evitare errori di argomenti mancanti
 ARG UID=1000
 ARG GID=1000
 
@@ -20,10 +19,14 @@ RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost *:8080>/g' /etc/apache2/sites-ava
 # Copia il codice sorgente
 COPY ./php /var/www/html
 
-# Installazione Composer
+# Installazione Composer globale
 RUN curl -sS https://getcomposer.org | php -- --install-dir=/usr/local/bin --filename=composer
 
-# MODIFICATO: Preleva l'entrypoint dalla cartella build/
+# NUOVO: Esegui l'installazione dei pacchetti qui (ottimizzato per la build)
+WORKDIR /var/www/html
+RUN composer install --no-interaction --optimize-autoloader --no-dev || true
+
+# Configura l'entrypoint
 COPY ./build/entrypoint-php.sh /entrypoint-php.sh
 RUN chmod +x /entrypoint-php.sh
 
