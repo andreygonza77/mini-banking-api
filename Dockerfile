@@ -5,10 +5,11 @@ ARG GID=1000
 
 RUN apt-get update && apt-get install unzip git -y
 
-# RISOLUZIONE BUG MPM: Installiamo mysqli, attiviamo i moduli e DISATTIVIAMO l'MPM extra che causa il crash
+# Abilita mysqli, i moduli richiesti e rimuove FORZATAMENTE i file MPM in conflitto
 RUN docker-php-ext-install mysqli && \
     a2enmod rewrite headers && \
-    a2dismod mpm_event || true
+    rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.* && \
+    a2enmod mpm_prefork || true
 
 # Configurazione CORS per Apache
 RUN sed -ri -e 's/^([ \t]*)(<\/VirtualHost>)/\1\tHeader set Access-Control-Allow-Headers "Content-Type"\n\1\2/g' /etc/apache2/sites-available/*.conf
@@ -35,5 +36,5 @@ RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 8080
 
-# Usiamo il comando nativo ufficiale (gestito correttamente da Railway)
+# Usiamo il comando nativo ufficiale
 CMD ["apache2-foreground"]
