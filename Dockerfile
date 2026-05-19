@@ -14,19 +14,19 @@ RUN sed -ri -e 's/^([ \t]*)(<\/VirtualHost>)/\1\tHeader set Access-Control-Allow
 RUN sed -i 's/Listen 80/Listen 8080/g' /etc/apache2/ports.conf
 RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost *:8080>/g' /etc/apache2/sites-available/*.conf
 
-COPY ./php /var/www/html
+RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 RUN curl -sS https://getcomposer.org | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www/html
-RUN composer install --no-interaction --optimize-autoloader --no-dev || true
+
+COPY ./php /var/www/html
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 RUN chown -R www-data:www-data /var/www/html
 
-WORKDIR /
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
 EXPOSE 8080
 
-CMD ["/start.sh"]
+CMD ["apache2-foreground"]
