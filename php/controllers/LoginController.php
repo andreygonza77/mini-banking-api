@@ -4,6 +4,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class LoginController
 {
+    private function getConnection(){
+        return mysqli_connect('my_mariadb', 'root', 'ciccio', 'bank');
+    }
     public function getAccount(Request $request, Response $response, $args) {
     $db = $this->getConnection();
     $id = (int)$args['id'];

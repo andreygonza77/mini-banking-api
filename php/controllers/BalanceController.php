@@ -4,8 +4,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class BalanceController
 {
+    private function getConnection(){
+        return mysqli_connect('my_mariadb', 'root', 'ciccio', 'bank');
+    }
     function convertToFiat(Request $request, Response $response, array $args){
-        $mysqli = new mysqli("my_mariadb", "root", "ciccio", "bank");
+        $mysqli = $this->getConnection();
         $accountId = (int)$args['id'];
         $params = $request->getQueryParams();
         $to = strtoupper($params['to'] ?? '');
@@ -91,7 +94,7 @@ class BalanceController
     }
 
     function convertToCrypto (Request $request, Response $response, array $args) {
-        $mysqli = new mysqli("my_mariadb", "root", "ciccio", "bank");
+        $mysqli = $this->getConnection();
         $accountId = (int)$args['id'];
         $params = $request->getQueryParams();
         $toCrypto = strtoupper($params['to'] ?? '');

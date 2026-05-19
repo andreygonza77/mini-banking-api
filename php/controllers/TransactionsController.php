@@ -22,8 +22,6 @@ class TransactionsController
     return $response->withHeader('Content-Type', 'application/json');
   }
 
-
-
   public function getMovements(Request $request, Response $response, $args){
     $db = $this->getConnection();
     $id = $args['id'];
