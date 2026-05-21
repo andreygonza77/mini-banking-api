@@ -1,107 +1,112 @@
-#  Mini Banking API 
+# Mini Banking API 
 
-Esercitazione backend REST che simuli un conto bancario semplificato.
+REST backend exercise simulating a simplified bank account.
 
-Il fine di questo progetto è quello di esporre endpoint HTTP che restituiscono JSON senza realizzare un front-end.
+The goal of this school project is to expose HTTP endpoints that return JSON.
 
-## Schema utillizato (bank) 
+## Schema used (bank) 
 
-### Tabella `accounts`
-| Campo | Tipo | Descrizione |
+### Table `accounts`
+| Field | Type | Description |
 | :--- | :--- | :--- |
-| `id` | INT (PK) | Identificativo univoco del conto |
-| `owner_name` | VARCHAR | Nome del titolare |
-| `currency` | VARCHAR | Valuta base (default: EUR) |
-| `created_at` | TIMESTAMP | Data di apertura |
+| `id` | INT (PK) | Unique account identifier |
+| `owner_name` | VARCHAR | Owner name |
+| `currency` | VARCHAR | Base currency (default: EUR) |
+| `created_at` | TIMESTAMP | Opening date |
 
-### Tabella `transactions`
-| Campo | Tipo | Descrizione |
+### Table `transactions`
+| Field | Type | Description |
 | :--- | :--- | :--- |
-| `id` | INT (PK) | Identificativo del movimento |
-| `account_id` | INT (FK) | Riferimento al conto |
-| `type` | ENUM | Tipo di operazione (`deposit` o `withdrawal`) |
-| `amount` | DECIMAL | Importo dell'operazione |
-| `description` | TEXT | Descrizione del movimento |
-| `created_at` | TIMESTAMP | Data dell'operazione |
+| `id` | INT (PK) | Transaction identifier |
+| `account_id` | INT (FK) | Account reference |
+| `type` | ENUM | Operation type (`deposit` or `withdrawal`) |
+| `amount` | DECIMAL | Operation amount |
+| `description` | TEXT | Transaction description |
+| `created_at` | TIMESTAMP | Operation date |
 
 ---
 
 ## API Endpoints
 
-### Gestione Movimenti
-| Metodo | Endpoint | Descrizione |
+### Transaction Management
+| Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/accounts/{id}/balance` | Saldo attuale di un utente |
-| `GET` | `/accounts/{id}/transactions` | Lista di tutti i movimenti di un conto |
-| `GET` | `/accounts/{idA}/transactions/{idT}` | Dettaglio di un singolo movimento |
-| `POST` | `/accounts/{id}/deposits` | Effettua un deposito (importo > 0) |
-| `POST` | `/accounts/{id}/withdrawals` | Effettua un prelievo (solo se saldo disp.) |
-| `PUT` | `/accounts/{idA}/transactions/{idT}` | Modifica la descrizione di un movimento |
-| `DELETE` | `/accounts/{idA}/transactions/{idT}` | Elimina l'ultimo movimento inserito |
+| `GET` | `/accounts/{id}` | Account's information |
+| `GET` | `/accounts/{id}/balance` | Current balance of a user |
+| `GET` | `/accounts/{id}/transactions` | List of all transactions for an account |
+| `GET` | `/accounts/{idA}/transactions/{idT}` | Detail of a single transaction |
+| `POST` | `/accounts/{id}/deposits` | Make a deposit (amount > 0) |
+| `POST` | `/accounts/{id}/withdrawals` | Make a withdrawal (only if balance available) |
+| `PUT` | `/accounts/{idA}/transactions/{idT}` | Edit the description of a transaction |
+| `DELETE` | `/accounts/{idA}/transactions/{idT}` | Delete the last inserted transaction |
 
-### Conversioni 
-| Metodo | Endpoint | Parametri | Descrizione |
+### Conversions 
+| Method | Endpoint | Parameters | Description |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/accounts/{id}/balance/convert/fiat` | `?to=USD` | Converte saldo in valuta Fiat |
-| `GET` | `/accounts/{id}/balance/convert/crypto`| `?to=BTC` | Converte saldo in Cryptocurrency |
+| `GET` | `/accounts/{id}/balance/convert/fiat` | `?to=USD` | Converts balance to Fiat currency |
+| `GET` | `/accounts/{id}/balance/convert/crypto`| `?to=BTC` | Converts balance to Cryptocurrency |
 
 --- 
 
-## 📝 Esempio di Chiamata (JSON) 
+## 📝 Call Example (JSON) 
 
-### Ottenere una specifica transazione
+### Get a specific transaction
 **GET** `http://localhost:8085/accounts/1/transactions/1`
 
-Comando:
+Command:
 ``` bash
 curl http://localhost:8085/accounts/1/transactions/1
 ```
 
-### Registrare un Deposito
+### Register a Deposit
 **POST** `http://localhost:8085/accounts/1/deposits`
 
-Cosa aggiungere:
+Payload:
 ```json
 {
     "amount": 150.50,
-    "description": "Ricarica mensile"
+    "description": "Monthly top-up"
 }
 ```
-Comando:
+Command:
 ``` bash
-curl -X POST http://localhost:8085/accounts/1/deposits -H "Content-Type: application/json" -d "{\"amount\":150.50, \"description\":\"Ricarica mensile\"}"
+curl -X POST http://localhost:8085/accounts/1/deposits -H "Content-Type: application/json" -d "{\"amount\":150.50, \"description\":\"Monthly top-up\"}"
 ```
 
-### Eliminare una transazione
+### Delete a transaction
 
 **DELETE** `http://localhost:8085/accounts/1/transactions/4`
 
-Cosa rimuove: ultima transazione 
+What it removes: last transaction 
 
-Comando:
+Command:
 
 ``` bash
 curl -X DELETE http://localhost:8085/accounts/1/transactions/4 -H "Content-Type: application/json"
 ```
 
-### Conversione in Crypto
+### Crypto Conversion
 
 **GET** `http://localhost:8085/accounts/1/balance/convert/crypto?to=BTC`
 
-Comando:
+Command:
 
 ``` bash
 curl http://localhost:8085/accounts/1/balance/convert/crypto?to=BTC
 ```
 
-## Come avviare:
+## How to start:
 
-### Su Linux
+### On Linux
 `MY_UID=$(id -u) MY_GID=$(id -g) docker-compose up`
 
-### Su Windows
+### On Windows
 `docker-compose up`
 
-## Realizzato da:
+## Frontend 
+
+The repository [mini-banking-frontend](https://github.com/andreygonza77/mini-banking-frontend.git) is the frontend for this backend project.
+
+## Created by:
 
 ### Gonzales Andrey, Calamai Neri, Stoppioni Diego, classe **5AIA** 🐒🐵
